@@ -31,9 +31,10 @@ Thumbs.db
 *~
 .claude/
 
-# Database
-db/
+# Database data files (but allow db config)
 *.db
+db/data/
+db/*.log
 
 # Build files
 dist/
