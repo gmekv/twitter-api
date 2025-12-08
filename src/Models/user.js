@@ -10,13 +10,13 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    lowercase: true
-},
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        lowercase: true
+    },
     email: {
         type: String,
         required: true,
@@ -47,7 +47,7 @@ username: {
             required: true
         }
     }],
-    
+
     avatar: {
         type: Buffer
     },
@@ -64,8 +64,8 @@ username: {
         type: String
     },
     followers: {
-type: Array,
-default: []
+        type: Array,
+        default: []
     },
     following: {
         type: Array,
@@ -81,17 +81,17 @@ userSchema.virtual('tweets', {
     foreignField: 'userID'
 })
 
-userSchema.virtual('notificationSent', { 
+userSchema.virtual('notificationSent', {
     ref: 'Notification',
     localField: '_id',
     foreignField: 'notSenderId'
-      } )
+})
 
-      userSchema.virtual('notificationReceived', { 
+userSchema.virtual('notificationReceived', {
     ref: 'Notification',
     localField: '_id',
     foreignField: 'notReceiverId'
-      } )
+})
 
 
 
@@ -101,6 +101,8 @@ userSchema.methods.toJSON = function () {
     const user = this
     const userObject = user.toObject()
     delete userObject.password
+    delete userObject.tokens      // Hide all auth tokens
+    delete userObject.avatar      // Hide binary avatar data
     return userObject
 }
 
