@@ -39,3 +39,6 @@ db/*.log
 # Build files
 dist/
 build/
+
+# Database backups
+backups/

@@ -34,17 +34,53 @@ cd twitter-api
 npm install
 ```
 
-3. Create a `.env` file in the root directory and add your environment variables:
+3. Set up MongoDB:
+
+**Option A: MongoDB Atlas (Recommended - Free Cloud Database)**
+- Follow the detailed guide in [MONGODB_SETUP_GUIDE.md](./MONGODB_SETUP_GUIDE.md)
+- Quick start: Sign up at https://www.mongodb.com/cloud/atlas/register
+- Get your connection string and add to `.env`
+
+**Option B: Local MongoDB**
+- Install MongoDB: `brew install mongodb-community@8.0`
+- Start MongoDB: `brew services start mongodb-community@8.0`
+
+4. Create a `.env` file in the root directory:
+```bash
+cp .env.example .env
 ```
+
+Edit `.env` and add your configuration:
+```
+# For MongoDB Atlas:
+MONGODB_URL=mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/twitter-api?retryWrites=true&w=majority
+
+# OR for local MongoDB:
+# MONGODB_URL=mongodb://127.0.0.1:27017/twitter-api
+
+# Optional:
 PORT=3000
-MONGODB_URL=mongodb://127.0.0.1:27017/twitter-api
 JWT_SECRET=your_jwt_secret_key
 ```
 
-4. Start the development server:
+5. Start the development server:
 ```bash
 npm run dev
 ```
+
+## Database Backup & Restore
+
+### Create a backup
+```bash
+./scripts/backup-mongodb.sh
+```
+
+### Restore from backup
+```bash
+./scripts/restore-mongodb.sh backup-YYYYMMDD-HHMMSS
+```
+
+See [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) for more MongoDB commands.
 
 ## API Endpoints
 

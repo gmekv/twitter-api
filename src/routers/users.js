@@ -25,10 +25,26 @@ router.post('/users', async (req, res) => {
     const user = new User(req.body)
     try {
         await user.save()
-        res.status(201).send(user)
+        const token = await user.generateAuthToken()
+        res.status(201).send({ user, token })
     }
     catch (e) {
-        res.status(400).send(e)
+        // Handle duplicate key error (username or email already exists)
+        if (e.code === 11000) {
+            const field = Object.keys(e.keyPattern)[0]
+            return res.status(400).send({
+                error: `A user with this ${field} already exists. Please use a different ${field}.`
+            })
+        }
+
+        // Handle validation errors
+        if (e.name === 'ValidationError') {
+            const errors = Object.values(e.errors).map(err => err.message)
+            return res.status(400).send({ error: errors.join(', ') })
+        }
+
+        // Generic error
+        res.status(400).send({ error: 'Unable to create user. Please try again.' })
     }
 })
 
@@ -94,14 +110,14 @@ router.get('/users/:id', async (req, res) => {
 router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
     try {
         const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer()
-        req.user.avatar = buffer   
+        req.user.avatar = buffer
         await req.user.save()
         res.send(req.user)
     }
     catch (e) {
         res.status(500).send(e)
     }
-}, (error, req, res, next   ) => {
+}, (error, req, res, next) => {
     console.log(error.message)
     res.status(400).send({ error: error.message })
 })
@@ -110,15 +126,15 @@ router.get('/users/:id/avatar', async (req, res) => {
     try {
         // The database query could fail, so it goes inside try
         const user = await User.findById(req.params.id)
-        
+
         // Check if user exists and has an avatar
         if (!user || !user.avatar) {
             return res.status(404).send()
         }
-        
+
         // Set the content type header
         res.set('Content-Type', 'image/jpg')
-        
+
         // Send the avatar data
         res.send(user.avatar)
     } catch (e) {
@@ -226,18 +242,18 @@ router.patch('/users/me', auth, async (req, res) => {
     }
 
     try {
-const user = await User.findById(req.user.id) 
+        const user = await User.findById(req.user.id)
 
         if (!user) {
             return res.status(404).send()
-        }        
+        }
         updates.forEach((update) => user[update] = req.body[update])
         await user.save()
         res.send(user)
     } catch (e) {
         res.status(400).send(e)
     }
-    })
+})
 
 
 
