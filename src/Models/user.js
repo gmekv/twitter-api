@@ -53,6 +53,7 @@ const userSchema = new mongoose.Schema({
     },
     avatarExists: {
         type: Boolean,
+        default: false
     },
     bio: {
         type: String

@@ -107,6 +107,7 @@ router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) 
     try {
         const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer()
         req.user.avatar = buffer
+        req.user.avatarExists = true
         await req.user.save()
         res.send(req.user)
     }
@@ -137,6 +138,13 @@ router.get('/users/:id/avatar', async (req, res) => {
         // Handle any errors that occurred
         res.status(404).send()
     }
+})
+
+router.delete('/users/me/avatar', auth, async (req, res) => {
+    req.user.avatar = undefined
+    req.user.avatarExists = false
+    await req.user.save()
+    res.send()
 })
 
 
