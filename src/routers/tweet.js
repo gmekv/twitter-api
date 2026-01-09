@@ -7,11 +7,7 @@ const auth = require('../middleware/auth')
 
 // Helper Functions
 
-const upload = multer({
-    limits: {
-        fileSize: 20000000 // Increased to 20MB
-    }
-})
+const upload = multer({})
 
 
 

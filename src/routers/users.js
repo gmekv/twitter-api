@@ -9,11 +9,7 @@ const router = new express.Router()
 
 // Helpers
 
-const upload = multer({
-    limits: {
-        fileSize: 10000000 // Increased to 10MB
-    },
-})
+const upload = multer({})
 
 
 
