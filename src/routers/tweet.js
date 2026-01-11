@@ -97,7 +97,6 @@ router.get('/tweets/:id/image', async (req, res) => {
 })
 
 // Like Tweet Function
-
 router.put('/tweets/:id/like', auth, async (req, res) => {
     try {
         const tweet = await Tweet.findById(req.params.id)
@@ -109,6 +108,20 @@ router.put('/tweets/:id/like', auth, async (req, res) => {
         if (!tweet.likes.includes(req.user.id)) {
             tweet.likes.push(req.user.id)
             await tweet.save()
+
+            // Auto-notification logic
+            if (tweet.userID.toString() !== req.user.id.toString()) {
+                const Notification = require('../Models/notification')
+                const notification = new Notification({
+                    username: req.user.username,
+                    notSenderId: req.user.id,
+                    notReceiverId: tweet.userID,
+                    notificationType: 'like',
+                    postText: tweet.text
+                })
+                await notification.save()
+            }
+
             res.status(200).json({
                 message: 'Post has been liked',
                 totalLikes: tweet.likes.length
