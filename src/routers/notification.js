@@ -3,39 +3,41 @@ const auth = require('../middleware/auth')
 const router = express.Router();
 const Notification = require('../Models/notification');
 
-router.post('/notificaiton', auth, async (req, res) => {
-    const notificaiton = new Notification({
+// Create a notification
+router.post('/notifications', auth, async (req, res) => {
+    const notification = new Notification({
         ...req.body,
-        user: req.user._id
+        notSenderId: req.user._id // Using the standardized field name from your model
     })
 
     try {
-        await notificaiton.save;
-        res.status(201).send(notificaiton);
+        await notification.save();
+        res.status(201).send(notification);
     }
     catch (e) {
         res.status(400).send(e);
     }
 })
 
-
-router.get('/notification', async (req, res) => {
+// Fetch all notifications
+router.get('/notifications', async (req, res) => {
     try {
-        const notificaitons = await Notification.find
-        res.send(notificaitons)
+        const notifications = await Notification.find({})
+        res.send(notifications)
     } catch (e) {
-        res.status(500).send(err);
+        res.status(500).send({ error: e.message });
     }
 })
 
-router.get('/notification/:id', async (req, res) => {
+// Fetch notifications for a specific user
+router.get('/notifications/:id', async (req, res) => {
     const _id = req.params.id;
 
     try {
-        const notificaitons = await Notification.find({ notReceiverId: _id })
-        res.send(notificaitons)
+        const notifications = await Notification.find({ notReceiverId: _id })
+        res.send(notifications)
     } catch (e) {
-        res.status(500).send(err);
+        res.status(500).send({ error: e.message });
     }
 })
 
